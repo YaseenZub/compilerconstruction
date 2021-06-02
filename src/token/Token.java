@@ -90,6 +90,7 @@ public class Token {
             return tokenType + "   [" + beginIndex + ";" + endIndex + "] ";
     }
 
+
     public int getLineNumber() {
         return lineNumber;
     }

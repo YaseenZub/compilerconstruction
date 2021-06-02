@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import parser.Parser;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -24,6 +27,7 @@ import lexer.Lexer;
 import lexer.LexicalError;
 import token.Token;
 import exceptions.AnalyzerException;
+import token.TokenType;
 
 @SuppressWarnings("serial")
 public class GUI extends JPanel {
@@ -117,6 +121,29 @@ public class GUI extends JPanel {
                 for(LexicalError lexicalError: lexer.getError()){
                     lexArea.append(i+" " + lexicalError.getError() + "Line:"+lexicalError.getLineNo());
                 }
+                List<Token> ts= lexer.getTokens();
+                Token temp = new Token(-1,-1,"$", TokenType.EndMarker,-1);
+                ts.add(temp);
+                List<Token> filtered=new ArrayList<>();
+                for(Token item:ts){
+                    if(item.getTokenString().equals(" ")){
+
+                    }
+                    else{
+                        filtered.add(item);
+                    }
+                }
+
+                Parser parser=new Parser(filtered);
+                for(Token token: parser.getToken()){
+                    System.out.println("P"+token.getTokenString());
+                }
+
+                System.out.println("LAST" + parser.S());
+                System.out.println(filtered.toString());
+//                System.out.println(parser.dec());
+                System.out.println("OE"+ parser.OE());
+
 
             }
         }

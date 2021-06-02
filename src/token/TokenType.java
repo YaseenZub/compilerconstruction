@@ -30,9 +30,10 @@ public enum TokenType {
 
     IntConstant,
 
+
     Increment,
     Decrement,
-
+    CharacterClass,
     Plus,
 
     Minus,
@@ -41,13 +42,14 @@ public enum TokenType {
 
     Divide,
 
+
     Point,
 
     EqualEqual,
 
     Equal,
     For,
-
+    Default,
     ExclameEqual,
 
     Greater,
@@ -59,9 +61,11 @@ public enum TokenType {
     Static,
 
     Public,
-
     Private,
     Protected,
+    Final,
+    Abstract,
+    Interface,
 
     Int,
 
@@ -91,7 +95,8 @@ public enum TokenType {
 
 
     Semicolon,
-
+    OpenArray,
+    CloseArray,
 
 
     InvertedComma,
@@ -100,7 +105,12 @@ public enum TokenType {
     SingleComma,
     Identifier,
     String,
-    Character;
+    Character,
+    EndMarker,
+    StringClass,
+    Not,
+    Or,
+    And;
 
     /**
      * Determines if this token is auxiliary
@@ -110,5 +120,9 @@ public enum TokenType {
     public boolean isAuxiliary() {
         return this == BlockComment || this == LineComment || this == NewLine || this == Tab
                 || this == WhiteSpace;
+    }
+
+    public static String toString(TokenType tokenType) {
+        return ""+tokenType+"";
     }
 }

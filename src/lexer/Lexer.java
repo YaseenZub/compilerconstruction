@@ -196,6 +196,9 @@ public class Lexer {
         regEx.put(TokenType.WhiteSpace, "( ).*");
         regEx.put(TokenType.OpenBrace, "(\\().*");
         regEx.put(TokenType.CloseBrace, "(\\)).*");
+        regEx.put(TokenType.OpenArray, "(\\[).*");
+        regEx.put(TokenType.CloseArray, "(\\]).*");
+
         regEx.put(TokenType.Semicolon, "(;).*");
         regEx.put(TokenType.Comma, "(,).*");
         regEx.put(TokenType.OpeningCurlyBrace, "(\\{).*");
@@ -207,7 +210,10 @@ public class Lexer {
         regEx.put(TokenType.Double, "\\b(int|double)\\b.*");
         regEx.put(TokenType.Tab, "(\\t).*");
         regEx.put(TokenType.NewLine, "(\\n).*");
+        regEx.put(TokenType.Class,"\\b(class)\\b.*");
+        regEx.put(TokenType.StringClass,"\\b(String)\\b.*");
         regEx.put(TokenType.Public, "\\b(public)\\b.*");
+        regEx.put(TokenType.Default, "\\b(default)\\b.*");
         regEx.put(TokenType.Private, "\\b(private)\\b.*");
         regEx.put(TokenType.Protected,"\\b(protected)\\b.*");
         regEx.put(TokenType.False, "\\b(false)\\b.*");
@@ -215,8 +221,10 @@ public class Lexer {
         regEx.put(TokenType.Null, "\\b(null)\\b.*");
         regEx.put(TokenType.Return, "\\b(return)\\b.*");
         regEx.put(TokenType.New, "\\b(new)\\b.*");
-        regEx.put(TokenType.Class, "\\b(class)\\b.*");
         regEx.put(TokenType.If, "\\b(if)\\b.*");
+        regEx.put(TokenType.Final, "\\b(final)\\b.*");
+        regEx.put(TokenType.Interface, "\\b(interface)\\b.*");
+        regEx.put(TokenType.Abstract, "\\b(abstract)\\b.*");
         regEx.put(TokenType.Else_if,"\\b(else if)\\b.*");
         regEx.put(TokenType.Else, "\\b(else)\\b.*");
         regEx.put(TokenType.While, "\\b(while)\\b.*");
@@ -224,12 +232,15 @@ public class Lexer {
         regEx.put(TokenType.Point, "(\\.).*");
         regEx.put(TokenType.Plus, "(\\+{1}).*");
         regEx.put(TokenType.Minus, "(\\-{1}).*");
-        regEx.put(TokenType.Increment,"(\\++{1}).*");
-        regEx.put(TokenType.Decrement,"(\\--{1}).*");
+//        regEx.put(TokenType.Increment,"(\\++{2}).*");
+//        regEx.put(TokenType.Decrement,"(\\--{2}).*");
         regEx.put(TokenType.Multiply, "(\\*).*");
         regEx.put(TokenType.Divide, "(/).*");
         regEx.put(TokenType.EqualEqual, "(==).*");
         regEx.put(TokenType.Equal, "(=).*");
+        regEx.put(TokenType.Not,"(\\!).*");
+        regEx.put(TokenType.And,"(&&).*");
+        regEx.put(TokenType.Or,"(\\|\\|).*");
         regEx.put(TokenType.ExclameEqual, "(\\!=).*");
         regEx.put(TokenType.Greater, "(>).*");
         regEx.put(TokenType.Less, "(<).*");
@@ -240,6 +251,6 @@ public class Lexer {
         regEx.put(TokenType.SingleComma, "(\').*");
         regEx.put(TokenType.Identifier, "\\b([a-zA-Z]{1}[0-9a-zA-Z_]{0,31})\\b.*");
 //		regEx.put(TokenType.String,"((\\s|\\W|\\w)*)");
-//		regEx.put(TokenType.Character,"((\\s|\\W|\\w)");
+		regEx.put(TokenType.CharacterClass,"Character");
     }
 }
