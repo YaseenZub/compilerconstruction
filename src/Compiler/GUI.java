@@ -141,8 +141,8 @@ public class GUI extends JPanel {
 
                 System.out.println("LAST" + parser.S());
                 System.out.println(filtered.toString());
-//                System.out.println(parser.dec());
-                System.out.println("OE"+ parser.OE());
+                System.out.println("PARSER"+parser.dec());
+//                System.out.println("OE"+ parser.OE());
 
 
             }

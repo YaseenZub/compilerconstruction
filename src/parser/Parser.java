@@ -37,8 +37,9 @@ public class Parser {
             if (s.equals("Identifier")) {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
-                if (list()) {
-                    return true;
+                if (init()) {
+                    if(list())
+                        return true;
                 }
             }
 
@@ -59,10 +60,26 @@ public class Parser {
             if (s.equals("Identifier")) {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
-                if (list()) {
-                    return true;
+                if (init()) {
+                    if(list()) {
+                        return true;
+                    }
                 }
             }
+        }
+
+        return false;
+    }
+    public boolean init(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("Equal")){
+            index++;
+            if(OE()){
+                return true;
+            }
+        }
+        else if(s.equals("Semicolon") || s.equals("Comma")){
+            return true;
         }
 
         return false;
