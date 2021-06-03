@@ -229,11 +229,13 @@ public class Lexer {
         regEx.put(TokenType.Else, "\\b(else)\\b.*");
         regEx.put(TokenType.While, "\\b(while)\\b.*");
         regEx.put(TokenType.Static, "\\b(static)\\b.*");
+        regEx.put(TokenType.This, "\\b(this)\\b.*");
+        regEx.put(TokenType.Super, "\\b(super)\\b.*");
         regEx.put(TokenType.Point, "(\\.).*");
         regEx.put(TokenType.Plus, "(\\+{1}).*");
         regEx.put(TokenType.Minus, "(\\-{1}).*");
-//        regEx.put(TokenType.Increment,"(\\++{2}).*");
-//        regEx.put(TokenType.Decrement,"(\\--{2}).*");
+        regEx.put(TokenType.Increment,"(\\+\\+).*");
+        regEx.put(TokenType.Decrement,"(--).*");
         regEx.put(TokenType.Multiply, "(\\*).*");
         regEx.put(TokenType.Divide, "(/).*");
         regEx.put(TokenType.EqualEqual, "(==).*");

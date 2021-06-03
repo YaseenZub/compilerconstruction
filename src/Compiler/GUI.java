@@ -126,7 +126,7 @@ public class GUI extends JPanel {
                 ts.add(temp);
                 List<Token> filtered=new ArrayList<>();
                 for(Token item:ts){
-                    if(item.getTokenString().equals(" ")){
+                    if(item.getTokenString().equals(" ") || item.getTokenString().equals("\n")){
 
                     }
                     else{
@@ -141,11 +141,13 @@ public class GUI extends JPanel {
 
                 System.out.println("LAST" + parser.S());
                 System.out.println(filtered.toString());
-                System.out.println("PARSER"+parser.dec());
+//                System.out.println("PARSER"+parser.dec());
 //                System.out.println("OE"+ parser.OE());
-
+                System.out.println("FOR" + parser.For());
 
             }
         }
     }
+
+
 }

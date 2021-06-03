@@ -92,7 +92,8 @@ public enum TokenType {
     Else_if,
 
     Else,
-
+    This,
+    Super,
 
     Semicolon,
     OpenArray,
@@ -110,6 +111,7 @@ public enum TokenType {
     StringClass,
     Not,
     Or,
+
     And;
 
     /**
