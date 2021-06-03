@@ -37,7 +37,8 @@ public enum TokenType {
     Plus,
 
     Minus,
-
+    Implements,
+    Extends,
     Multiply,
 
     Divide,
@@ -98,7 +99,7 @@ public enum TokenType {
     Semicolon,
     OpenArray,
     CloseArray,
-
+    StringClass,
 
     InvertedComma,
 
@@ -108,7 +109,7 @@ public enum TokenType {
     String,
     Character,
     EndMarker,
-    StringClass,
+
     Not,
     Or,
 

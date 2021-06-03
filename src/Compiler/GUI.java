@@ -139,11 +139,29 @@ public class GUI extends JPanel {
                     System.out.println("P"+token.getTokenString());
                 }
 
-                System.out.println("LAST" + parser.S());
+//                System.out.println("LAST" + parser.S());
                 System.out.println(filtered.toString());
 //                System.out.println("PARSER"+parser.dec());
 //                System.out.println("OE"+ parser.OE());
-                System.out.println("FOR" + parser.For());
+//                System.out.println("FOR" + parser.For());
+//                Boolean parsed=parser.fun_def();
+//                System.out.println("FUNCTION DEF" +parsed);
+//                System.out.println("If ELSE     " +parser.if_else());
+//                System.out.println(parser.index);
+//                Boolean parsed=parser.if_else();
+//                System.out.println("SST     " + parser.SST());
+                Boolean parsed=parser.Array();
+                System.out.println("Array DEf   "+parsed);
+                int index=parser.index;
+                System.out.println(index);
+
+
+                if(filtered.get(index).getTokenString().equals("$") && parsed){
+                    System.out.println("TRUE HAI NA");
+                    System.out.println(true);
+                }else{
+                    System.out.println("Syntax Error at Line No  " +filtered.get(index).getLineNumber() +"Position"+ filtered.get(index).getBegin() + "\t In Token " +filtered.get(index).getTokenString());
+                }
 
             }
         }

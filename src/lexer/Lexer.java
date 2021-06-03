@@ -231,6 +231,9 @@ public class Lexer {
         regEx.put(TokenType.Static, "\\b(static)\\b.*");
         regEx.put(TokenType.This, "\\b(this)\\b.*");
         regEx.put(TokenType.Super, "\\b(super)\\b.*");
+        regEx.put(TokenType.Implements, "\\b(implements)\\b.*");
+        regEx.put(TokenType.Extends, "\\b(extends)\\b.*");
+
         regEx.put(TokenType.Point, "(\\.).*");
         regEx.put(TokenType.Plus, "(\\+{1}).*");
         regEx.put(TokenType.Minus, "(\\-{1}).*");
