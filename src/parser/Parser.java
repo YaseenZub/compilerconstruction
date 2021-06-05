@@ -699,12 +699,14 @@ public class Parser {
             if (OE()) {
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("CloseArray")) {
-                    return true;
+                    index++;
+                    if(Xdash())
+                        return true;
                 }
             }
         } else if (s.equals("OpenBrace")) {
             index++;
-            if (args()) {
+            if (args()) { //ay
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("CloseBrace")) {
                     index++;
@@ -777,7 +779,7 @@ public class Parser {
     public boolean args() {
         String s = TokenType.toString(ts.get(index).getTokenType());
         if (s.equals("Identifier") || s.equals("OpenBrace") || s.equals("IntConstant") || s.equals("String")
-                || s.equals("Character") || s.equals("DoubleConstant") || s.equals("Comma") || s.equals("CloseBrace")) {
+                || s.equals("Character") || s.equals("DoubleConstant") || s.equals("Comma")){
             if (OE()) {
                 if (args_1()) {
                     return true;
@@ -908,24 +910,114 @@ public class Parser {
 //
 //        return false;
 //    }
+//
+//    public boolean c3(){
+//        String s = TokenType.toString(ts.get(index).getTokenType());
+//        if(s.equals("This") || s.equals("Super")){
+//            if(th_su()){
+//                if(X()){
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if(s.equals("Equal")){
+//                        index++;
+//                        if(E()){
+//                            return true;
+//                        }
+//                    }
+//                    else if(s.equals("Increment") || s.equals("Decrement")){
+//                        index++;
+//                        return true;
+//                    }
+//
+//                }
+//            }
+//
+//        }
+//        else if(s.equals("CloseBrace")){
+//            return true;
+//        }
+//        else{
+//            if(s.equals("Identifier")){
+//                index++;
+//                s = TokenType.toString(ts.get(index).getTokenType());
+//                if(s.equals("Equal")){
+//                    index++;
+//                    if(E()){
+//                        return true;
+//                    }
+//                }
+//                else if(s.equals("Increment") || s.equals("Decrement")){
+//                    index++;
+//                    return true;
+//                }
+//            }
+//
+//        }
+//
+//
+//            if(th_su()){
+//                if(X()){
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if(s.equals("Equal")){
+//                        index++;
+//                        if(E()){
+//                            return true;
+//                        }
+//                    }
+//                    else if(s.equals("Increment") || s.equals("Decrement")){
+//                        index++;
+//                        return true;
+//                    }
+//
+//                }
+//            }
+//
+//        }
+//        else if(s.equals("CloseBrace")){
+//            return true;
+//        }
+//        else{
+//            if(s.equals("Identifier")){
+//                index++;
+//                s = TokenType.toString(ts.get(index).getTokenType());
+//                if(s.equals("Equal")){
+//                    index++;
+//                    if(E()){
+//                        return true;
+//                    }
+//                }
+//                else if(s.equals("Increment") || s.equals("Decrement")){
+//                    index++;
+//                    return true;
+//                }
+//            }
+//
+//        }
+//
+//
+//        return false;
+//        return false;
+//    }
 
     public boolean c3(){
         String s = TokenType.toString(ts.get(index).getTokenType());
-        if(s.equals("This") || s.equals("Super")){
-            if(th_su()){
-                if(X()){
-                    s = TokenType.toString(ts.get(index).getTokenType());
-                    if(s.equals("Equal")){
-                        index++;
-                        if(E()){
-                            return true;
-                        }
-                    }
-                    else if(s.equals("Increment") || s.equals("Decrement")){
-                        index++;
-                        return true;
-                    }
+        if(s.equals("This")||s.equals("Super") || s.equals("Identifier") || s.equals("Increment") || s.equals("Decrement")) {
 
+
+
+            if(X()){
+                if(inc_dec()){
+                    return true;
+                }
+            }
+            else if(assignment()){
+                return true;
+            }
+
+
+
+            else if(inc_dec()){
+                if(X()){
+                    return true;
                 }
             }
 
@@ -933,33 +1025,15 @@ public class Parser {
         else if(s.equals("CloseBrace")){
             return true;
         }
-        else{
-            if(s.equals("Identifier")){
-                index++;
-                s = TokenType.toString(ts.get(index).getTokenType());
-                if(s.equals("Equal")){
-                    index++;
-                    if(E()){
-                        return true;
-                    }
-                }
-                else if(s.equals("Increment") || s.equals("Decrement")){
-                    index++;
-                    return true;
-                }
-            }
-
-        }
-
 
         return false;
     }
 
     public  boolean assignment(){
         String s = TokenType.toString(ts.get(index).getTokenType());
-        if(s.equals("This")||s.equals("Super")){
+        if(s.equals("Identifier")||s.equals("This")||s.equals("Super")){
                 if(th_su()){
-                    if(X()){
+                    if(X()){ // mene
                         s = TokenType.toString(ts.get(index).getTokenType());
 
                         if(s.equals("Equal")){
@@ -971,12 +1045,13 @@ public class Parser {
                     }
                 }
         }
-        else if(s.equals("Identifier")||s.equals("Not")||s.equals("OpenBrace")||
+        else if(s.equals("Not")||s.equals("OpenBrace")||
         s.equals("IntConstant")||s.equals("DoubleConstant") ||s.equals("String")||
         s.equals("Character") || s.equals("CloseBrace")){
             return true;
         }
-        System.out.println("YAHIN SE FALSE assignment" + s);
+        s = TokenType.toString(ts.get(index).getTokenType());
+
 
         return false;
     }
@@ -995,38 +1070,55 @@ public class Parser {
         return false;
     }
 
+//    public boolean inc_dec(){
+//        String s = TokenType.toString(ts.get(index).getTokenType());
+////        System.out.println("INC_DEC"+ s);
+//        if(s.equals("Increment") || s.equals("Decrement") || s.equals("Identifier")){
+//            if(s.equals("Increment")){
+//                index++;
+//                if(X())
+//                    return true;
+//            }
+//            else if(s.equals("Decrement")){
+//                index++;
+//                if(X())
+//                    return true;
+//            }
+//            else if(s.equals("Identifier")) {
+//                int temp = index + 1;
+//                String withTemp = TokenType.toString(ts.get(temp).getTokenType());
+////                if (withTemp.equals("Increment") || s.equals("Decrement")) {  //EXTRA LGA K CHECK KIYA HAI
+//                if (X()) {
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if (s.equals("Increment")) {
+//                        index++;
+//                        return true;
+//                    } else if (s.equals("Decrement")) {
+//                        index++;
+//                        return true;
+//                    }
+//                }
+////            }
+//            }
+//        }
+//        System.out.println("YAHIN SE FALSE inc_dec" + s);
+//
+//        return false;
+//    }
+
     public boolean inc_dec(){
         String s = TokenType.toString(ts.get(index).getTokenType());
-        System.out.println("INC_DEC"+ s);
-        if(s.equals("Increment") || s.equals("Decrement") || s.equals("Identifier")){
-            if(s.equals("Increment")){
-                index++;
-                if(X())
-                    return true;
-            }
-            else if(s.equals("Decrement")){
-                index++;
-                if(X())
-                    return true;
-            }
-            else if(s.equals("Identifier")){
-                if(X()){
-                    s = TokenType.toString(ts.get(index).getTokenType());
-                    if(s.equals("Increment")){
-                        index++;
-                        return true;
-                    }
-                    else if(s.equals("Decrement")){
-                        index++;
-                        return true;
-                    }
-                }
-            }
+        if(s.equals("Increment") || s.equals("Decrement")){
+            index++;
+            return true;
         }
-        System.out.println("YAHIN SE FALSE inc_dec" + s);
+        else if(s.equals("Semicolon") || s.equals("Identifier")){
+            return true;
+        }
 
         return false;
     }
+
 
     public boolean th_su(){
         String s = TokenType.toString(ts.get(index).getTokenType());
@@ -1096,6 +1188,7 @@ public class Parser {
 
     public boolean SST(){
         String s = TokenType.toString(ts.get(index).getTokenType());
+        int temp=index;
         if(s.equals("Identifier") || s.equals("StringClass") || s.equals("CharacterClass")||s.equals("Double")||s.equals("Int") || s.equals("For")
         || s.equals("While") || s.equals("Do") || s.equals("Continue") || s.equals("Break") || s.equals("Return") || s.equals("Switch") || s.equals("If")
         || s.equals("Else_if") || s.equals("Else") || s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Decrement") ||s.equals("Increment")
@@ -1123,42 +1216,80 @@ public class Parser {
                     }
                 }
             }
-            else if(inc_dec()){
+            else if(X()){
                 s = TokenType.toString(ts.get(index).getTokenType());
-                if(s.equals("Semicolon")){
+                if(s.equals("Semicolon")) {
                     index++;
                     return true;
                 }
+                System.out.println("X YAAHN"+s);
+                System.out.println("INDEX"+index);
+                index=temp;
+                System.out.println("INDEX2"+index);
             }
-            else if(Array()){
+//            else if(s.equals("Identifier")){
+//                index++;
+//                if(SST_A()){
+//                    return true;
+//                }
+//            }
+//            else if(inc_dec()){
+//                if(X()) {
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if (s.equals("Semicolon")) {
+//                        index++;
+//                        return true;
+//                    }
+//                }
+//            }
+             if(Array()){
                 return true;
             }
-            else if(init()){
-                s = TokenType.toString(ts.get(index).getTokenType());
-                System.out.println("init sst" + s);
-                if(s.equals("Semicolon")){
-                    index++;
-                    return true;
-                }
-            }
+//            else if(init()){
+//                s = TokenType.toString(ts.get(index).getTokenType());
+//                System.out.println("init sst" + s);
+//                if(s.equals("Semicolon")){
+//                    index++;
+//                    return true;
+//                }
+//            }
+//            else if(X()){
+//                if(inc_dec()){
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if(s.equals("Semicolon"))
+//                        return true;
+//                }
+//            }
+
             else if(assignment()){
-                return true;
+                s = TokenType.toString(ts.get(index).getTokenType());
+
+                if(s.equals("Semicolon")) {
+                    index++;
+                    return true;
+                }
+                //APNI TRF SE
 
             }
-            else if(s.equals("Identifier")){
+            if(TokenType.toString(ts.get(index).getTokenType()).equals("Increment")){
+                System.out.println("IDHR ARHE H" + index);
                 index++;
-                if(SST_A()){
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("Semicolon"))
+                {
+                    index++;
                     return true;
                 }
             }
-            else if(For()){
+
+             if(For()){
                 return true;
             }
 
-            else if(dec()){
+             if(dec()){
                 return true;
             }
-            else if(if_else()){
+             if(if_else()){
                 return true;
             }
             else if(While()){
@@ -1191,6 +1322,7 @@ public class Parser {
 
 
 
+
         }
 
         return false;
@@ -1200,11 +1332,16 @@ public class Parser {
         if(s.equals("Point") || s.equals("OpenBrace") || s.equals("Equal") || s.equals("Identifier") || s.equals("Increment") || s.equals("Decrement")){
             if(SSTdash()){
                 return true;
+
             }
             else if(s.equals("Equal")){
                 index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+
+                System.out.println("YAHAN AYE HO KIYA"+s);
                 if(E()){
-                    return true;
+
+                        return true;
                 }
             }
             else if(s.equals("Identifier")){
@@ -1233,8 +1370,15 @@ public class Parser {
                     }
                 }
             }
-        }
-
+        }            else if(init()){
+                s = TokenType.toString(ts.get(index).getTokenType());
+                System.out.println("init sst" + s);
+                if(s.equals("Semicolon")){
+                    index++;
+                    return true;
+                }
+            }
+        System.out.println("YAHIN SE FALSE HRHE HO NA"+s);
         return false;
     }
     public boolean SSTdash(){
