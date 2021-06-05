@@ -29,7 +29,7 @@ public enum TokenType {
     DoubleConstant,
 
     IntConstant,
-
+    Do,
 
     Increment,
     Decrement,

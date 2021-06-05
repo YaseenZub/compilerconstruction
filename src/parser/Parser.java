@@ -10,7 +10,7 @@ import java.util.List;
 public class Parser {
     public static int index = 0;
     List<Token> ts;
-
+    int[]  a =new int[]{1,2};
     public Parser(List<Token> ts) {
         this.ts = ts;
         this.index = 0;
@@ -1130,6 +1130,21 @@ public class Parser {
                     return true;
                 }
             }
+            else if(Array()){
+                return true;
+            }
+            else if(init()){
+                s = TokenType.toString(ts.get(index).getTokenType());
+                System.out.println("init sst" + s);
+                if(s.equals("Semicolon")){
+                    index++;
+                    return true;
+                }
+            }
+            else if(assignment()){
+                return true;
+
+            }
             else if(s.equals("Identifier")){
                 index++;
                 if(SST_A()){
@@ -1146,12 +1161,16 @@ public class Parser {
             else if(if_else()){
                 return true;
             }
-//            else if(While()){
-//                return true;
-//            }
-//            else if(Do()){
-//                return true;
-//            }
+            else if(While()){
+                return true;
+            }
+            else if(Do()){
+                return true;
+            }
+            else if(fun_def()){
+                return true;
+            }
+
 //            else if(Continue()){
 //                return true;
 //            }
@@ -1481,6 +1500,61 @@ public class Parser {
         else if(s.equals("ClosingCurlyBrace")){
             return true;
         }
+
+        return false;
+    }
+    public boolean While(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("While")){
+            index++;
+            s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("OpenBrace")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(OE()){
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("CloseBrace")){
+                        index++;
+                        if(Body()){
+                            return true;
+                        }
+
+                    }
+                }
+            }
+
+
+        }
+        return false;
+    }
+
+    public boolean Do(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("Do")){
+            index++;
+            if(Body()){
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("While")){
+                    index++;
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("OpenBrace")){
+                        index++;
+                        if(OE()){
+                            s = TokenType.toString(ts.get(index).getTokenType());
+                            if(s.equals("CloseBrace")){
+                                index++;
+                                s = TokenType.toString(ts.get(index).getTokenType());
+                                if(s.equals("Semicolon")){
+                                    index++;
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         return false;
     }

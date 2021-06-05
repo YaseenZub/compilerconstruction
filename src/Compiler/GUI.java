@@ -126,7 +126,9 @@ public class GUI extends JPanel {
                 ts.add(temp);
                 List<Token> filtered=new ArrayList<>();
                 for(Token item:ts){
-                    if(item.getTokenString().equals(" ") || item.getTokenString().equals("\n")){
+                    String s =TokenType.toString(item.getTokenType());
+                    if(item.getTokenString().equals(" ") || item.getTokenString().equals("\n")||
+                      s.equals("LineComment") || s.equals("BlockComment")){
 
                     }
                     else{
@@ -144,14 +146,14 @@ public class GUI extends JPanel {
 //                System.out.println("PARSER"+parser.dec());
 //                System.out.println("OE"+ parser.OE());
 //                System.out.println("FOR" + parser.For());
-//                Boolean parsed=parser.fun_def();
-//                System.out.println("FUNCTION DEF" +parsed);
+                Boolean parsed=parser.fun_def();
+                System.out.println("FUNCTION DEF" +parsed);
 //                System.out.println("If ELSE     " +parser.if_else());
 //                System.out.println(parser.index);
 //                Boolean parsed=parser.if_else();
 //                System.out.println("SST     " + parser.SST());
-                Boolean parsed=parser.Array();
-                System.out.println("Array DEf   "+parsed);
+//                Boolean parsed=parser.Array();
+//                System.out.println("Array DEf   "+parsed);
                 int index=parser.index;
                 System.out.println(index);
 
