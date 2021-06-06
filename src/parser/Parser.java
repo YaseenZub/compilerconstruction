@@ -36,12 +36,13 @@ public class Parser {
                 }
 
         }
-        else {
+
             s = TokenType.toString(ts.get(index).getTokenType());
-            if(s.equals("$")){
+        System.out.println("S HAI YE"+s);
+            if(s.equals("EndMarker")){
                 return true;
             }
-        }
+
         return false;
     }
 
@@ -60,12 +61,12 @@ public class Parser {
                 }
             }
         }
-        else{
+
             s = TokenType.toString(ts.get(index).getTokenType());
-            if(s.equals("$")){
+            if(s.equals("EndMarker")){
                 return true;
             }
-        }
+
 
         return false;
     }
@@ -91,6 +92,8 @@ public class Parser {
                                     s = TokenType.toString(ts.get(index).getTokenType());
                                     if(s.equals("OpeningCurlyBrace")){
                                         index++;
+                                        s = TokenType.toString(ts.get(index).getTokenType());
+                                        System.out.println("CBODY ME BHEJA"+s);
                                         if(c_body()){
                                             s = TokenType.toString(ts.get(index).getTokenType());
                                             if(s.equals("ClosingCurlyBrace")){
@@ -220,28 +223,242 @@ public class Parser {
 
     public boolean c_body(){
         String s = TokenType.toString(ts.get(index).getTokenType());
-        if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier")){
-            if(dec()){
-                if(c_body()){
+        if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier") || s.equals("Static")
+        ||s.equals("Final") || s.equals("Default") || s.equals("Public") || s.equals("Private") || s.equals("Protected")){
+            if(s.equals("Static")){
+                index++;
+                if(c_bodyB()){
                     return true;
                 }
-            }else if(s.equals("Identifier")){
+            }
+            else if(s.equals("Identifier")){
                 index++;
+                if(c_bodyA()){
+
+                    return true;
+                }
+            }else if(dec()){
+                s = TokenType.toString(ts.get(index).getTokenType());
+                System.out.println("C_BODY SE RETURN");
                 if(c_body()){
                     return true;
                 }
             }
-            else if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void")){
+            else if(s.equals("Final")){
                 index++;
-                
+            }
+//            else if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void")){
+//                if(return_type()){
+//                    s = TokenType.toString(ts.get(index).getTokenType());
+//                    if(s.equals("Identifier")){
+//                        index++;
+//                        s = TokenType.toString(ts.get(index).getTokenType());
+//                        if(s.equals("OpenBrace")){
+//                            index++;
+//                            if(params()){
+//                                s = TokenType.toString(ts.get(index).getTokenType());
+//                                if(s.equals("CloseBrace")){
+//                                    index++;
+//                                    s = TokenType.toString(ts.get(index).getTokenType());
+//                                    if(s.equals("OpeningCurlyBrace")){
+//                                        index++;
+//                                        s = TokenType.toString(ts.get(index).getTokenType());
+//                                        if(MST()){
+//                                            s = TokenType.toString(ts.get(index).getTokenType());
+//                                            if(s.equals("ClosingCurlyBrace")){
+//                                                index++;
+//                                                s = TokenType.toString(ts.get(index).getTokenType());
+//
+//                                                if(c_body()){
+//                                                    return true;
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            }
+            else if(fun_def()){
+                if(c_body()){
+                    return true;
+                }
+            }
+        }
+        if(s.equals("ClosingCurlyBrace")){
+            index++;
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean c_bodyA(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("Identifier")){
+            if(c_bodyAdash()){
+                index++;
+                return true;
+            }
+        }
+        else if(s.equals("OpenArray")){
+            index++;
+            s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("CloseArray")){
+                index++;
+                if(ass_arrdash()){ /**  @PARAMS GEt BACK ON thIS */
+                    return true;
+                }
+            }
+        }
+
+
+        return false;
+    }
+
+    public boolean c_bodyAdash(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("New")){
+            index++;
+            s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Identifier")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("OpenBrace")){
+                    index++;
+                    if(params()){
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("CloseBrace")){
+                            index++;
+                            s = TokenType.toString(ts.get(index).getTokenType());
+                            if(s.equals("OpeningCurlyBrace")){
+                                index++;
+                                if(MST()){
+                                    s = TokenType.toString(ts.get(index).getTokenType());
+                                    if(s.equals("ClosingCurlyBrace")){
+                                        index++;
+                                        if(c_body()){
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if(s.equals("OpenArray")){
+            index++;
+            s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("CloseArray")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("Equal")){
+                    index++;
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(ass_arrdash()){
+                        return true;
+                    }
+                }
             }
         }
 
         return false;
     }
 
+    public boolean c_bodyB(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("Final")){
+            index++;
+            if(c_bodyBdash()){
+                return true;
+            }
+        }
+        else if(s.equals("Identifier")){
+            index++;
+            if(Array()){
+                return true;
+            }
+        }
+        else if(return_type()){
+            s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Identifier")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("OpenBrace")){
+                    index++;
+                    if(params()){
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("CloseBrace")){
+                            index++;
+                            if(s.equals("OpeningCurlyBrace")){
+                                index++;
+                                if(MST()){
+                                    s = TokenType.toString(ts.get(index).getTokenType());
+                                    if(s.equals("ClosingCurlyBrace")){
+                                        index++;
+                                        if(c_body()){
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean c_bodyBdash(){
+        String s = TokenType.toString(ts.get(index).getTokenType());
+        if(s.equals("Identifier")){
+            index++;
+            if(Array()){
+                return true;
+            }
+        }
+        else if(return_type()){
+            if(s.equals("Identifier")){
+                index++;
+                if(s.equals("OpenBrace")){
+                    index++;
+                    if(params()){
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("CloseBrace")){
+                            index++;
+                            if(s.equals("OpeningCurlyBrace")){
+                                index++;
+                                s = TokenType.toString(ts.get(index).getTokenType());
+                                if(MST()){
+                                    s = TokenType.toString(ts.get(index).getTokenType());
+                                    if(s.equals("ClosingCurlyBrace")){
+                                        index++;
+                                        if(c_body()){
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return false;
+    }
+
     public boolean dec() { //2 int c1
         String s = TokenType.toString(ts.get(index).getTokenType());
+        System.out.println("DECLARATION SE FALSES" +s);
         if (s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass")) {
             index++;
             s = TokenType.toString(ts.get(index).getTokenType());
@@ -262,6 +479,7 @@ public class Parser {
 
     public boolean list() {
         String s = TokenType.toString(ts.get(index).getTokenType());
+        System.out.println("IDHR B AYE HOGE " +s);
         if (s.equals("Semicolon")) {
             index++;
 
@@ -450,6 +668,10 @@ public class Parser {
         if (s.equals("Identifier") || s.equals("DoubleConstant") || s.equals("String") || s.equals("IntConstant") || s.equals("Character") || s.equals("OpenBrace") || s.equals("Not")) {
             if (AE()) { //5 intconstant 3
                 if (OEdash()) {
+//                     s = TokenType.toString(ts.get(index).getTokenType());
+//                    if(s.equals("Semicolon")){
+//                        index++;
+//                    }
                     return true;
                 }
             }
@@ -1000,24 +1222,44 @@ public class Parser {
 
     public boolean c3(){
         String s = TokenType.toString(ts.get(index).getTokenType());
+        int temp=index;
         if(s.equals("This")||s.equals("Super") || s.equals("Identifier") || s.equals("Increment") || s.equals("Decrement")) {
 
 
+//            if(X()){
+//                s = TokenType.toString(ts.get(index).getTokenType());
+//                if(s.equals("CloseBrace")) {
+//                    return true;
+//                }
+//                System.out.println("X YAAHN"+s);
+//                System.out.println("INDEX"+index);
+//                index=temp;
+//                System.out.println("INDEX2"+index);
+//            }
+             if(assignment()){
+                s = TokenType.toString(ts.get(index).getTokenType());
 
-            if(X()){
-                if(inc_dec()){
-                    return true;
+                if(s.equals("CloseBrace")) {
+                     return true;
                 }
+                //APNI TRF SE
+
             }
-            else if(assignment()){
-                return true;
-            }
 
 
-
-            else if(inc_dec()){
-                if(X()){
+            if(TokenType.toString(ts.get(index).getTokenType()).equals("Increment") || TokenType.toString(ts.get(index).getTokenType()).equals("Decrement")){
+                System.out.println("IDHR ARHE H" + index);
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("CloseBrace"))
+                {
                     return true;
+                }else if(X()){
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("CloseBrace"))
+                    {
+                        return true;}
+
                 }
             }
 
@@ -1061,10 +1303,9 @@ public class Parser {
         if(s.equals("Identifier")){
             index++;
             if(Xdash()){
-                return true;
+                    return true;
             }
         }
-
         System.out.println("YAHIN SE FALSE X" + s);
 
         return false;
@@ -1194,8 +1435,7 @@ public class Parser {
         || s.equals("Else_if") || s.equals("Else") || s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Decrement") ||s.equals("Increment")
         || s.equals("Try")){
 
-            if(s.equals("This")){
-                index++;
+            if(th_su()){
                 if(X()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Equal")){
@@ -1205,28 +1445,18 @@ public class Parser {
                     }
                 }
             }
-            else if(s.equals("Super")){
-                index++;
-                if(X()){
-                    s = TokenType.toString(ts.get(index).getTokenType());
-                    if(s.equals("Equal")){
-                        if(E()){
-                            return true;
-                        }
-                    }
-                }
-            }
-            else if(X()){
-                s = TokenType.toString(ts.get(index).getTokenType());
-                if(s.equals("Semicolon")) {
-                    index++;
-                    return true;
-                }
-                System.out.println("X YAAHN"+s);
-                System.out.println("INDEX"+index);
-                index=temp;
-                System.out.println("INDEX2"+index);
-            }
+
+//            else if(X()){
+//                s = TokenType.toString(ts.get(index).getTokenType());
+//                if(s.equals("Semicolon")) {
+//                    index++;
+//                    return true;
+//                }
+//                System.out.println("X YAAHN"+s);
+//                System.out.println("INDEX"+index);
+//                index=temp;
+//                System.out.println("INDEX2"+index);
+//            }
 //            else if(s.equals("Identifier")){
 //                index++;
 //                if(SST_A()){
@@ -1244,7 +1474,7 @@ public class Parser {
 //            }
              if(Array()){
                 return true;
-            }
+            }else{ index=temp;}
 //            else if(init()){
 //                s = TokenType.toString(ts.get(index).getTokenType());
 //                System.out.println("init sst" + s);
@@ -1260,36 +1490,62 @@ public class Parser {
 //                        return true;
 //                }
 //            }
+//            if(OE()){
+//                return true;
+//            }
 
-            else if(assignment()){
+             if(assignment()){
                 s = TokenType.toString(ts.get(index).getTokenType());
 
                 if(s.equals("Semicolon")) {
+                    System.out.println("IDHR to ni AYE HO ???");
                     index++;
                     return true;
                 }
                 //APNI TRF SE
-
+                 System.out.println("IDHR AYE HO ???");
+                index=temp;
             }
-            if(TokenType.toString(ts.get(index).getTokenType()).equals("Increment")){
-                System.out.println("IDHR ARHE H" + index);
-                index++;
-                s = TokenType.toString(ts.get(index).getTokenType());
-                if(s.equals("Semicolon"))
-                {
-                    index++;
-                    return true;
+            else {
+                index=temp;
+             }
+            if(X()){
+                 s = TokenType.toString(ts.get(index).getTokenType());
+                if(inc_dec()){
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("Semicolon")){
+                        index++;
+                        return true;
+                    }
+
                 }
+             }
+            else{
+                index=temp;
             }
+            if(inc_dec()){
+                 s = TokenType.toString(ts.get(index).getTokenType());
 
-             if(For()){
+                if(X()){
+                    System.out.println("KIYA TM IDHR");
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("Semicolon"))
+                    {
+                        index++;
+                        return true;
+                    }
+                }
+             }
+
+
+            else if(For()){
                 return true;
             }
 
-             if(dec()){
+             else if(dec()){
                 return true;
             }
-             if(if_else()){
+             else if(if_else()){
                 return true;
             }
             else if(While()){

@@ -146,10 +146,10 @@ public class GUI extends JPanel {
 //                System.out.println("PARSER"+parser.dec());
 //                System.out.println("OE"+ parser.OE());
 //                System.out.println("FOR" + parser.For());
-//                Boolean parsed=parser.X();
-                Boolean parsed=parser.fun_def();
+//                Boolean parsed=parser.OE();
+                Boolean parsed=parser.S();
                 System.out.println("fun_def " +parsed);
-//                System.out.println("If ELSE     " +parser.if_else());
+//                System.out.println("If ELSE         " +parser.if_else());
 //                System.out.println(parser.index);
 //                Boolean parsed=parser.if_else();
 //                System.out.println("SST     " + parser.SST());
