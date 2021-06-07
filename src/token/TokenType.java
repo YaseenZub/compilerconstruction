@@ -27,7 +27,6 @@ public enum TokenType {
     ClosingCurlyBrace,
 
     DoubleConstant,
-
     IntConstant,
     Do,
 
@@ -42,7 +41,9 @@ public enum TokenType {
     Multiply,
 
     Divide,
-
+    Exception,
+    Try,
+    Catch,
 
     Point,
 
@@ -54,7 +55,9 @@ public enum TokenType {
     ExclameEqual,
 
     Greater,
-
+    Colon,
+    Case,
+    Switch,
     Less,
 
     LessEqual,

@@ -140,7 +140,6 @@ public class GUI extends JPanel {
                 for(Token token: parser.getToken()){
                     System.out.println("P"+token.getTokenString());
                 }
-
 //                System.out.println("LAST" + parser.S());
                 System.out.println(filtered.toString());
 //                System.out.println("PARSER"+parser.dec());

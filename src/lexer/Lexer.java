@@ -233,6 +233,14 @@ public class Lexer {
         regEx.put(TokenType.Super, "\\b(super)\\b.*");
         regEx.put(TokenType.Implements, "\\b(implements)\\b.*");
         regEx.put(TokenType.Extends, "\\b(extends)\\b.*");
+        regEx.put(TokenType.Switch, "\\b(switch)\\b.*");
+        regEx.put(TokenType.Case, "\\b(case)\\b.*");
+        regEx.put(TokenType.Exception, "\\b(Exception)\\b.*");
+        regEx.put(TokenType.Try, "\\b(try)\\b.*");
+        regEx.put(TokenType.Catch, "\\b(catch)\\b.*");
+
+        regEx.put(TokenType.Colon, "(:).*");
+
         regEx.put(TokenType.Do, "\\b(do)\\b.*");
 
         regEx.put(TokenType.Point, "(\\.).*");
