@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
+
 public class Parser {
         public static int index = 0;
         List<Token> ts;
@@ -23,7 +25,7 @@ public class Parser {
         public boolean S() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Default") || s.equals("Final")
-                    || s.equals("Abstract") || s.equals("Interface") || s.equals("Class")) {
+                    || s.equals("Abstract") || s.equals("Interface") || s.equals("Class")||s.equals("Static")) {
                     if(c_def()){
                         s = TokenType.toString(ts.get(index).getTokenType());
                         System.out.println("IDHR S KIV ALUE HAU"+s);
@@ -51,7 +53,7 @@ public class Parser {
         public boolean def(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Default") || s.equals("Final")
-                    || s.equals("Abstract") || s.equals("Interface") || s.equals("Class")) {
+                    || s.equals("Abstract") || s.equals("Interface") || s.equals("Class") ||s.equals("Static")) {
                 if(c_def()){
                     if(def()){
                         return true;
@@ -77,13 +79,15 @@ public class Parser {
         public boolean inter_def(){
             return false;
         }
-        public boolean c_def(){
+        public boolean c_defbekar(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Public")||s.equals("Private")||s.equals("Protected")||
             s.equals("Final")||s.equals("Abstract") ||s.equals("Static") || s.equals("Class")){
+                System.out.println("YAHAN AOGE");
+
                 if(AM()){
-                    if(fin_ab()){
-                        if(Static()){
+                    if(Static()){
+                        if(Final()){
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if(s.equals("Class")){
                                 index++;
@@ -115,13 +119,89 @@ public class Parser {
             return false;
         }
 
+        public boolean c_def(){
+            String s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Public")||s.equals("Private")||s.equals("Protected")||
+                    s.equals("Final")||s.equals("Abstract") ||s.equals("Static") || s.equals("Class")){
+                if(AM()){
+                    if(Static()){
+                        if(c_defdash()){
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        public boolean c_defdash(){
+            String s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Final")|| s.equals("Class")){
+                if(Final()){
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("Class")){
+                        index++;
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("Identifier")){
+                            index++;
+                            s = TokenType.toString(ts.get(index).getTokenType());
+                            if(inherit()) {
+                                s = TokenType.toString(ts.get(index).getTokenType());
+                                if (s.equals("OpeningCurlyBrace")) {
+                                    index++;
+                                    s = TokenType.toString(ts.get(index).getTokenType());
+                                    if (c_body()) {
+                                        s = TokenType.toString(ts.get(index).getTokenType());
+                                        if (s.equals("ClosingCurlyBrace")) {
+                                            index++;
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if(s.equals("Abstract")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("Class")){
+                    index++;
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(s.equals("Identifier")){
+                        index++;
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if (inherit()) {
+                            s = TokenType.toString(ts.get(index).getTokenType());
+                            if(s.equals("OpeningCurlyBrace")){
+                                index++;
+                                if(abstract_function()){
+                                    if(c_body()){
+                                        if(abstract_function()){
+                                            s = TokenType.toString(ts.get(index).getTokenType());
+                                            if(s.equals("ClosingCurlyBrace")) {
+                                                index++;
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        }
+                    }
+                }
+
+            return false;
+        }
+
         public boolean AM(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Private") || s.equals("Public") || s.equals("Protected")){
                 index++;
                 return true;
             }
-            else if(s.equals("Final") || s.equals("Abstract") || s.equals("Static") || s.equals("Class")|| s.equals("Int") || s.equals("Double") || s.equals("CharacterClass")||s.equals("StringClass") || s.equals("Void")){
+            else if(s.equals("Final") || s.equals("Abstract") || s.equals("Static") || s.equals("Class")|| s.equals("Int") || s.equals("Double") || s.equals("CharacterClass")||s.equals("StringClass") || s.equals("Void") || s.equals("Class")){
                 return true;
             }
 
@@ -292,7 +372,8 @@ public class Parser {
                     }
                 }
             }
-            if(s.equals("ClosingCurlyBrace")){
+            if(s.equals("ClosingCurlyBrace")||s.equals("Public")||s.equals("Protected")||s.equals("Private")||s.equals("Static")
+            ||s.equals("Abstract")){
                 return true;
             }
 
@@ -545,12 +626,11 @@ public class Parser {
         public boolean fun_def(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Static") || s.equals("Int") || s.equals("Void")
-            || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Final") || s.equals("Abstract")
-            ){
+            || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Final")             ){
                 if(AM()){
                     System.out.println("IDHR");
                     if(Static()){
-                        if(fin_ab()){
+                        if(Final()){
                             if(return_type()){
                                 s = TokenType.toString(ts.get(index).getTokenType());
                                 if(s.equals("Identifier")){
@@ -582,6 +662,7 @@ public class Parser {
                                 }
                             }
                         }
+
                     }
                 }
 
@@ -594,6 +675,50 @@ public class Parser {
 
             return false;
         }
+
+
+        public boolean abstract_function(){
+            String s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Public") || s.equals("Private")||s.equals("Protected")
+            ||s.equals("Static")||s.equals("Abstract")){
+                if(AM()){
+                    s = TokenType.toString(ts.get(index).getTokenType());
+                    if(Static()){
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("Abstract")){
+                            index++;
+                            if(return_type()){
+                                s = TokenType.toString(ts.get(index).getTokenType());
+                                if(s.equals("Identifier")){
+                                    index++;
+                                    s = TokenType.toString(ts.get(index).getTokenType());
+                                    if(s.equals("OpenBrace")){
+                                        index++;
+                                        if(params()){
+                                            s = TokenType.toString(ts.get(index).getTokenType());
+                                            if(s.equals("CloseBrace")){
+                                                index++;
+                                                s = TokenType.toString(ts.get(index).getTokenType());
+                                                if(s.equals("Semicolon")){
+                                                    index++;
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if(s.equals("ClosingCurlyBrace") || s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier") || s.equals("Static")
+                    ||s.equals("Final") || s.equals("Default") || s.equals("Public") || s.equals("Private") || s.equals("Protected")){
+                return true;
+            }
+            return false;
+        }
+
 
         public boolean return_type(){
             String s = TokenType.toString(ts.get(index).getTokenType());
@@ -1669,7 +1794,7 @@ public class Parser {
                 return true;
             }
             else{
-                if(s.equals("Int") || s.equals("CharacterClass") || s.equals("StringCLass") || s.equals("Double") ){
+                if(s.equals("Int") || s.equals("CharacterClass") || s.equals("StringCLass") || s.equals("Double") || s.equals("Void") || s.equals("Class")){
                     return true;
                 }
             }
