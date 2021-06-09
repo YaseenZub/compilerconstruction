@@ -1,12 +1,6 @@
 package token;
 
-/**
- * The {@code TokeType} enumeration represents types of tokens in subset of Java
- * language
- *
- * @author Ira Korshunova
- *
- */
+
 public enum TokenType {
     BlockComment,
 
@@ -118,11 +112,6 @@ public enum TokenType {
 
     And;
 
-    /**
-     * Determines if this token is auxiliary
-     *
-     * @return {@code true} if token is auxiliary, {@code false} otherwise
-     */
     public boolean isAuxiliary() {
         return this == BlockComment || this == LineComment || this == NewLine || this == Tab
                 || this == WhiteSpace;

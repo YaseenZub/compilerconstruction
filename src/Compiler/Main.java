@@ -15,15 +15,9 @@ public class Main {
                 frame.pack();
                 frame.setResizable(false);
                 frame.setVisible(true);
-                int c = 2+ returnArray()[2];
             }
         });
     }
 
-    public static int[] returnArray(){
-        int a[]=new int[2];
-        a[0]=1;
-        a[1]=3;
-        return a;
-    }
+
 }

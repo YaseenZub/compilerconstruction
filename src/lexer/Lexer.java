@@ -12,28 +12,17 @@ import exceptions.AnalyzerException;
 import token.Token;
 import token.TokenType;
 
-/**
- * The {@code Lexer} class represents lexical analyzer for subset of Java
- * language.
- *
- * @author Ira Korshunova
- *
- */
 public class Lexer {
     static int check=0,charcheck=0;
     boolean mark=true;
     boolean charmark=true;
     int lineNumber=0;
-    /** Mapping from type of token to its regular expression */
     private Map<TokenType, String> regEx;
 
-    /** List of tokens as they appear in the input source */
     private List<Token> result;
 
     private List<LexicalError> error;
-    /**
-     * Initializes a newly created {@code Lexer} object
-     */
+
     public Lexer() {
         regEx = new TreeMap<TokenType, String>();
         launchRegEx();
@@ -41,15 +30,7 @@ public class Lexer {
         error=new ArrayList<LexicalError>();
     }
 
-    /**
-     * Performs the tokenization of the input source code.
-     *
-     * @param source
-     *            string to be analyzed
-     * @throws AnalyzerException
-     *             if lexical error exists in the source
-     *
-     */
+
     public void tokenize(String source) throws AnalyzerException {
         int position = 0;
         Token token = null;
@@ -68,23 +49,14 @@ public class Lexer {
         }
     }
 
-    /**
-     * Returns a sequence of tokens
-     *
-     * @return list of tokens
-     */
+
     public List<Token> getTokens() {
         return result;
     }
 
     public List<LexicalError> getError(){return error;};
 
-    /**
-     * Returns a sequence of tokens without types {@code BlockComment},
-     * {@code LineComment} , {@code NewLine}, {@code Tab}, {@code WhiteSpace}
-     *
-     * @return list of tokens
-     */
+
     public List<Token> getFilteredTokens() {
         List<Token> filteredResult = new ArrayList<Token>();
         for (Token t : this.result) {
@@ -95,17 +67,6 @@ public class Lexer {
         return filteredResult;
     }
 
-    /**
-     * Scans the source from the specific index and returns the first separated
-     * token
-     *
-     * @param source
-     *            source code to be scanned
-     * @param fromIndex
-     *            the index from which to start the scanning
-     * @return first separated token or {@code null} if no token was found
-     *
-     */
     private Token separateToken(String source, int fromIndex) {
         if (fromIndex < 0 || fromIndex >= source.length()) {
             throw new IllegalArgumentException("Illegal index in the input stream!");
@@ -186,10 +147,7 @@ public class Lexer {
         char s=arr[0];
         return s;
     }
-    /**
-     * Creates map from token types to its regular expressions
-     *
-     */
+
     private void launchRegEx() {
         regEx.put(TokenType.BlockComment, "(/\\*.*?\\*/).*");
         regEx.put(TokenType.LineComment, "(//(.*?)[\r$]?\n).*");
@@ -265,6 +223,6 @@ public class Lexer {
         regEx.put(TokenType.SingleComma, "(\').*");
         regEx.put(TokenType.Identifier, "\\b([a-zA-Z]{1}[0-9a-zA-Z_]{0,31})\\b.*");
 //		regEx.put(TokenType.String,"((\\s|\\W|\\w)*)");
-		regEx.put(TokenType.CharacterClass,"Character");
+		regEx.put(TokenType.CharacterClass,"\\b(char)\\b.*");
     }
 }

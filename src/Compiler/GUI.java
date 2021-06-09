@@ -128,42 +128,43 @@ public class GUI extends JPanel {
                 for(Token item:ts){
                     String s =TokenType.toString(item.getTokenType());
                     if(item.getTokenString().equals(" ") || item.getTokenString().equals("\n")||
-                      s.equals("LineComment") || s.equals("BlockComment")){
+                      s.equals("LineComment") || s.equals("BlockComment") || s.equals("InvertedComma") || s.equals("SingleComma")){
 
                     }
                     else{
                         filtered.add(item);
                     }
                 }
+                int index=0;
+try {
+    Parser parser = new Parser(filtered);
+    for(Token token: parser.getToken()){
+        System.out.println("P"+token.getTokenString());
+    }
 
-                Parser parser=new Parser(filtered);
-                for(Token token: parser.getToken()){
-                    System.out.println("P"+token.getTokenString());
-                }
-//                System.out.println("LAST" + parser.S());
-                System.out.println(filtered.toString());
-//                System.out.println("PARSER"+parser.dec());
-//                System.out.println("OE"+ parser.OE());
-//                System.out.println("FOR" + parser.For());
-//                Boolean parsed=parser.OE();
-                Boolean parsed=parser.S();
-                System.out.println("fun_def " +parsed);
-//                System.out.println("If ELSE         " +parser.if_else());
-//                System.out.println(parser.index);
-//                Boolean parsed=parser.if_else();
-//                System.out.println("SST     " + parser.SST());
-//                Boolean parsed=parser.Array();
-//                System.out.println("Array DEf   "+parsed);
-                int index=parser.index;
-                System.out.println(index);
+    System.out.println(filtered.toString());
+
+    Boolean parsed=parser.S();
+    System.out.println("fun_def " +parsed);
+     index=parser.index;
+    System.out.println(index);
+    if (filtered.get(index).getTokenString().equals("$") && parsed) {
+        System.out.println("TRUE HAI NA");
+        System.out.println(true);
+        JOptionPane.showMessageDialog(frame, "Syntax Analysis is completed",
+                "Information", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(frame, "Syntax Error at Line No  " + filtered.get(index).getLineNumber() + "Position" + filtered.get(index).getBegin() + "\t In Token " + filtered.get(index).getTokenString(), "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
+catch (Exception error){
+    JOptionPane.showMessageDialog(frame, "Syntax Error at Line No  " + filtered.get(index).getLineNumber() + "Position" + filtered.get(index).getBegin() + "\t In Token " + filtered.get(index).getTokenString(), "Error",
+            JOptionPane.ERROR_MESSAGE);
+}
 
 
-                if(filtered.get(index).getTokenString().equals("$") && parsed){
-                    System.out.println("TRUE HAI NA");
-                    System.out.println(true);
-                }else{
-                    System.out.println("Syntax Error at Line No  " +filtered.get(index).getLineNumber() +"Position"+ filtered.get(index).getBegin() + "\t In Token " +filtered.get(index).getTokenString());
-                }
+
 
             }
         }

@@ -1,4 +1,5 @@
 package parser;
+import exceptions.AnalyzerException;
 import lexer.Lexer;
 import token.Token;
 import token.TokenType;
@@ -201,7 +202,7 @@ public class Parser {
                 index++;
                 return true;
             }
-            else if(s.equals("Final") || s.equals("Abstract") || s.equals("Static") || s.equals("Class")|| s.equals("Int") || s.equals("Double") || s.equals("CharacterClass")||s.equals("StringClass") || s.equals("Void") || s.equals("Class")){
+            else if(s.equals("Final") || s.equals("Abstract") || s.equals("Static") || s.equals("Class")|| s.equals("Int") || s.equals("Double") || s.equals("CharacterClass")||s.equals("StringClass") || s.equals("Void")){
                 return true;
             }
 
@@ -305,6 +306,7 @@ public class Parser {
 
         public boolean c_body(){
             String s = TokenType.toString(ts.get(index).getTokenType());
+            int temp=index;
             if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier") || s.equals("Static")
             ||s.equals("Final") || s.equals("Default") || s.equals("Public") || s.equals("Private") || s.equals("Protected")){
                 if(s.equals("Static")){
@@ -315,6 +317,7 @@ public class Parser {
                 }
                 else if(s.equals("Identifier")){
                     index++;
+
                     if(c_bodyA()){
                         return true;
                     }
@@ -366,10 +369,17 @@ public class Parser {
     //                }
     //
     //            }
-                else if(fun_def()){
-                    if(c_body()){
-                        return true;
+                index=temp;
+
+                    if (fun_def()) {
+                            if (c_body()) {
+                                return true;
+                            }
                     }
+
+                index=temp;
+                if(arr_dec()){
+                    return true;
                 }
             }
             if(s.equals("ClosingCurlyBrace")||s.equals("Public")||s.equals("Protected")||s.equals("Private")||s.equals("Static")
@@ -394,7 +404,7 @@ public class Parser {
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("CloseArray")){
                     index++;
-                    if(arr_dec()){ /**  @PARAMS GEt BACK ON thIS */
+                    if(arr_dec7()){ /**  @PARAMS GEt BACK ON thIS */
                         return true;
                     }
                 }
@@ -441,7 +451,7 @@ public class Parser {
                     if(s.equals("Equal")){
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
-                        if(arr_dec()){
+                        if(arr_dec8()){
                             return true;
                         }
                     }
@@ -450,7 +460,6 @@ public class Parser {
 
             return false;
         }
-
         public boolean c_bodyB(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Final")){
@@ -461,7 +470,7 @@ public class Parser {
             }
             else if(s.equals("Identifier")){
                 index++;
-                if(arr_dec()){
+                if(arr_dec13()){
                     return true;
                 }
             }
@@ -504,7 +513,7 @@ public class Parser {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Identifier")){
                 index++;
-                if(arr_dec()){
+                if(arr_dec9()){
                     return true;
                 }
             }
@@ -547,7 +556,7 @@ public class Parser {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Identifier")){
                 index++;
-                if(arr_dec()){
+                if(arr_dec2()){
                     return true;
                 }
             }
@@ -626,9 +635,9 @@ public class Parser {
         public boolean fun_def(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Static") || s.equals("Int") || s.equals("Void")
-            || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Final")             ){
+            || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Final")){
                 if(AM()){
-                    System.out.println("IDHR");
+                    System.out. println("IDHR");
                     if(Static()){
                         if(Final()){
                             if(return_type()){
@@ -636,10 +645,8 @@ public class Parser {
                                 if(s.equals("Identifier")){
                                     index++;
                                     s = TokenType.toString(ts.get(index).getTokenType());
-
                                     if(s.equals("OpenBrace")){
                                         index++;
-
 
                                         if(params()){
                                             s = TokenType.toString(ts.get(index).getTokenType());
@@ -667,11 +674,7 @@ public class Parser {
                 }
 
             }
-            else {
-                if(s.equals("Identifier") || s.equals("Class")){
-                    return true;
-                }
-            }
+
 
             return false;
         }
@@ -1794,7 +1797,7 @@ public class Parser {
                 return true;
             }
             else{
-                if(s.equals("Int") || s.equals("CharacterClass") || s.equals("StringCLass") || s.equals("Double") || s.equals("Void") || s.equals("Class")){
+                if(s.equals("Int") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Double") || s.equals("Void") || s.equals("Class")){
                     return true;
                 }
             }
