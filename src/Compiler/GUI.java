@@ -137,7 +137,7 @@ public class GUI extends JPanel {
                 }
                 int index=0;
 try {
-    Parser parser = new Parser(filtered);
+    Parser parser = new Parser(filtered,frame);
     for(Token token: parser.getToken()){
         System.out.println("P"+token.getTokenString());
     }

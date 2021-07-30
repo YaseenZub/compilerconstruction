@@ -1,20 +1,33 @@
 package parser;
-import exceptions.AnalyzerException;
+import exceptions.*;
 import lexer.Lexer;
 import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import SemanticUtility.*;
 
-
-
+import javax.swing.*;
 
 public class Parser {
+        SemanticAnalyzer sem=new SemanticAnalyzer();
+        String inherit_mt=null;
+        String class_name_mt=null;
+        String category_name_mt="General";
+        String type_mt=null;
+
+        String am_mt=null;
+        Stack stack = new Stack();
+        int scope=1;
         public static int index = 0;
         List<Token> ts;
         int[]  a =new int[]{1,2};
-        public Parser(List<Token> ts) {
+        SemanticException semanticException;
+        JFrame frame;
+        public Parser(List<Token> ts, JFrame frame) {
+            this.frame=frame;
             this.ts = ts;
             this.index = 0;
         }
@@ -78,8 +91,57 @@ public class Parser {
 
 
         public boolean inter_def(){
+            String s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Interface")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("Identifier")){
+                    index++;
+                    if(inter_inherit()){
+                        s = TokenType.toString(ts.get(index).getTokenType());
+                        if(s.equals("OpeningCurlyBrace")){
+                            //TRYING:
+                            stack.push(scope);
+                            System.out.println("SCOPE FOR THIS IS " + scope);
+                            scope++;
+                            index++;
+                            if(c_body()){
+                                s = TokenType.toString(ts.get(index).getTokenType());
+                                if(s.equals("ClosingCurlyBrace")){
+                                    //POPPING STACK SCOPE
+                                    int temp_stack=Integer.parseInt(stack.pop().toString());
+                                    System.out.println("POPPING OUT SCOPE");
+                                    index++;
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return false;
         }
+        public boolean inter_inherit(){
+            String s = TokenType.toString(ts.get(index).getTokenType());
+            if(s.equals("Extends")){
+                index++;
+                s = TokenType.toString(ts.get(index).getTokenType());
+                if(s.equals("Identifier")){
+                    index++;
+                    if(inherit2()){
+                        return true;
+                    }
+                }
+            }
+            else if(s.equals("OpeningCurlyBrace")){
+                return true;
+            }
+
+            return false;
+        }
+
+
         public boolean c_defbekar(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Public")||s.equals("Private")||s.equals("Protected")||
@@ -98,12 +160,18 @@ public class Parser {
                                     if(inherit()){
                                         s = TokenType.toString(ts.get(index).getTokenType());
                                         if(s.equals("OpeningCurlyBrace")){
+                                            //TRYING:
+                                            stack.push(scope);
+                                            System.out.println("SCOPE FOR THIS IS " + scope);
                                             index++;
                                             s = TokenType.toString(ts.get(index).getTokenType());
                                             System.out.println("CBODY ME BHEJA"+s);
                                             if(c_body()){
                                                 s = TokenType.toString(ts.get(index).getTokenType());
                                                 if(s.equals("ClosingCurlyBrace")){
+                                                    //POPPING STACK SCOPE
+                                                    int temp_stack=Integer.parseInt(stack.pop().toString());
+                                                    System.out.println("POPPING OUT SCOPE");
                                                     index++;
                                                     return true;
                                                 }
@@ -143,16 +211,32 @@ public class Parser {
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Identifier")){
+                            class_name_mt=ts.get(index).getTokenString();
                             index++;
+
                             s = TokenType.toString(ts.get(index).getTokenType());
+
                             if(inherit()) {
                                 s = TokenType.toString(ts.get(index).getTokenType());
+                                if(!sem.insert_MT(class_name_mt,type_mt,category_name_mt,inherit_mt,null,am_mt)){
+                                    System.out.println("Redeclaration Error");
+                                    JOptionPane.showMessageDialog(frame, "Redeclaration Error", "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+
                                 if (s.equals("OpeningCurlyBrace")) {
+                                    //TRYING:
+                                    stack.push(scope);
+                                    System.out.println("SCOPE FOR THIS IS " + scope);
+                                    scope++;
                                     index++;
                                     s = TokenType.toString(ts.get(index).getTokenType());
                                     if (c_body()) {
                                         s = TokenType.toString(ts.get(index).getTokenType());
                                         if (s.equals("ClosingCurlyBrace")) {
+                                            //POPPING STACK SCOPE
+                                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                                            System.out.println("POPPING OUT SCOPE");
                                             index++;
                                             return true;
                                         }
@@ -175,12 +259,19 @@ public class Parser {
                         if (inherit()) {
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if(s.equals("OpeningCurlyBrace")){
+                                //TRYING:
+                                stack.push(scope);
+                                System.out.println("SCOPE FOR THIS IS " + scope);
+                                scope++;
                                 index++;
                                 if(abstract_function()){
                                     if(c_body()){
                                         if(abstract_function()){
                                             s = TokenType.toString(ts.get(index).getTokenType());
                                             if(s.equals("ClosingCurlyBrace")) {
+                                                //POPPING STACK SCOPE
+                                                int temp_stack=Integer.parseInt(stack.pop().toString());
+                                                System.out.println("POPPING OUT SCOPE");
                                                 index++;
                                                 return true;
                                             }
@@ -199,6 +290,7 @@ public class Parser {
         public boolean AM(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Private") || s.equals("Public") || s.equals("Protected")){
+                am_mt=s;
                 index++;
                 return true;
             }
@@ -249,7 +341,15 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("Identifier")){
+                    inherit_mt=ts.get(index).getTokenString();
+                    if(sem.lookup_MT(inherit_mt)){
+                        System.out.println("CLASS NOT AVAILABLE TO INHERIT");
+                        JOptionPane.showMessageDialog(frame, "Class not found Error", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+
                     index++;
+
                     if(impl()){
                         return true;
                     }
@@ -488,11 +588,18 @@ public class Parser {
                                 index++;
                                 s = TokenType.toString(ts.get(index).getTokenType());
                                 if(s.equals("OpeningCurlyBrace")){
+                                    //TRYING:
+                                    stack.push(scope);
+                                    System.out.println("SCOPE FOR THIS IS " + scope);
+                                    scope++;
                                     index++;
                                     if(MST()){
                                         s = TokenType.toString(ts.get(index).getTokenType());
 
                                         if(s.equals("ClosingCurlyBrace")){
+                                            //POPPING STACK SCOPE
+                                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                                            System.out.println("POPPING OUT SCOPE");
                                             index++;
                                             if(c_body()){
                                                 return true;
@@ -530,11 +637,18 @@ public class Parser {
                                 index++;
                                 s = TokenType.toString(ts.get(index).getTokenType());
                                 if(s.equals("OpeningCurlyBrace")){
+                                    //TRYING:
+                                    stack.push(scope);
+                                    System.out.println("SCOPE FOR THIS IS " + scope);
+                                    scope++;
                                     index++;
                                     s = TokenType.toString(ts.get(index).getTokenType());
                                     if(MST()){
                                         s = TokenType.toString(ts.get(index).getTokenType());
                                         if(s.equals("ClosingCurlyBrace")){
+                                            //POPPING STACK SCOPE
+                                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                                            System.out.println("POPPING OUT SCOPE");
                                             index++;
                                             if(c_body()){
                                                 return true;
@@ -654,10 +768,17 @@ public class Parser {
                                                 index++;
                                                 s = TokenType.toString(ts.get(index).getTokenType());
                                                 if(s.equals("OpeningCurlyBrace")){
+                                                    //TRYING:
+                                                    stack.push(scope);
+                                                    System.out.println("SCOPE FOR THIS IS " + scope);
+                                                    scope++;
                                                     index++;
                                                     if(MST()) {
                                                         s = TokenType.toString(ts.get(index).getTokenType());
                                                         if (s.equals("ClosingCurlyBrace")){
+                                                            //POPPING STACK SCOPE
+                                                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                                                            System.out.println("POPPING OUT SCOPE");
                                                             index++;
                                                             return true;
                                                         }
@@ -1510,10 +1631,17 @@ public class Parser {
                     } else if (SST()) {
                         return true;
                     } else if (s.equals("OpeningCurlyBrace")) {
+                        //TRYING:
+                        stack.push(scope);
+                        System.out.println("SCOPE FOR THIS IS " + scope);
+                        scope++;
                         index++;
                         if (MST()) {
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if (s.equals("ClosingCurlyBrace")) {
+                                //POPPING STACK SCOPE
+                                int temp_stack=Integer.parseInt(stack.pop().toString());
+                                System.out.println("POPPING OUT SCOPE");
                                 index++;
                                 return true;
                             }
@@ -1793,6 +1921,7 @@ public class Parser {
         public boolean Final(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Final")){
+                type_mt=s;
                 index++;
                 return true;
             }
@@ -2011,10 +2140,17 @@ public class Parser {
         public boolean arr_dec5(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if(values()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2054,10 +2190,17 @@ public class Parser {
         public boolean arr_dec6(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if(values()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2095,10 +2238,17 @@ public class Parser {
         public boolean arr_dec7(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if(values()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2135,10 +2285,17 @@ public class Parser {
         public boolean arr_dec8(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if(values()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2207,10 +2364,17 @@ public class Parser {
         public boolean arr_dec10(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if(values()){
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2266,10 +2430,17 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("OpeningCurlyBrace")){
+                    //TRYING:
+                    stack.push(scope);
+                    System.out.println("SCOPE FOR THIS IS " + scope);
+                    scope++;
                     index++;
                     if(values()){
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("ClosingCurlyBrace")){
+                            //POPPING STACK SCOPE
+                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                            System.out.println("POPPING OUT SCOPE");
                             index++;
                             if(s.equals("Semicolon")){
                                 index++;
@@ -2295,10 +2466,17 @@ public class Parser {
                 }
             }
             else if(s.equals("OpeningCurlyBrace")){
+                //TRYING:
+                stack.push(scope);
+                System.out.println("SCOPE FOR THIS IS " + scope);
+                scope++;
                 index++;
                 if (values()) {
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("ClosingCurlyBrace")){
+                        //POPPING STACK SCOPE
+                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                        System.out.println("POPPING OUT SCOPE");
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Semicolon")){
@@ -2342,10 +2520,17 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("OpeningCurlyBrace")){
+                    //TRYING:
+                    stack.push(scope);
+                    System.out.println("SCOPE FOR THIS IS " + scope);
+                    scope++;
                     index++;
                     if(values()){
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("ClosingCurlyBrace")){
+                            //POPPING STACK SCOPE
+                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                            System.out.println("POPPING OUT SCOPE");
                             index++;
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if(s.equals("Semicolon")){
@@ -2513,6 +2698,10 @@ public class Parser {
                             index++;
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if(s.equals("OpeningCurlyBrace")){
+                                //TRYING:
+                                stack.push(scope);
+                                System.out.println("SCOPE FOR THIS IS " + scope);
+                                scope++;
                                 index++;
                                 s = TokenType.toString(ts.get(index).getTokenType());
                                 if(case_body()){
@@ -2520,6 +2709,9 @@ public class Parser {
                                     System.out.println("SWITHC KA LAST");
 
                                     if(s.equals("ClosingCurlyBrace")){
+                                        //POPPING STACK SCOPE
+                                        int temp_stack=Integer.parseInt(stack.pop().toString());
+                                        System.out.println("POPPING OUT SCOPE");
                                         index++;
                                         return true;
                                     }
@@ -2579,11 +2771,18 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("OpeningCurlyBrace")){
+                    //TRYING:
+                    stack.push(scope);
+                    System.out.println("SCOPE FOR THIS IS " + scope);
+                    scope++;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(MST()){
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("ClosingCurlyBrace")){
+                            //POPPING STACK SCOPE
+                            int temp_stack=Integer.parseInt(stack.pop().toString());
+                            System.out.println("POPPING OUT SCOPE");
                             index++;
                             s = TokenType.toString(ts.get(index).getTokenType());
                             if(s.equals("Catch")){
@@ -2602,11 +2801,18 @@ public class Parser {
                                                 index++;
                                                 s = TokenType.toString(ts.get(index).getTokenType());
                                                 if(s.equals("OpeningCurlyBrace")){
+                                                    //TRYING:
+                                                    stack.push(scope);
+                                                    System.out.println("SCOPE FOR THIS IS " + scope);
+                                                    scope++;
                                                     index++;
                                                     s = TokenType.toString(ts.get(index).getTokenType());
                                                     if(MST()){
                                                         s = TokenType.toString(ts.get(index).getTokenType());
                                                         if(s.equals("ClosingCurlyBrace")){
+                                                            //POPPING STACK SCOPE
+                                                            int temp_stack_2=Integer.parseInt(stack.pop().toString());
+                                                            System.out.println("POPPING OUT SCOPE");
                                                             index++;
                                                             return true;
                                                         }

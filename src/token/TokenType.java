@@ -1,6 +1,8 @@
 package token;
 
 
+import lexer.Lexer;
+
 public enum TokenType {
     BlockComment,
 
@@ -120,4 +122,7 @@ public enum TokenType {
     public static String toString(TokenType tokenType) {
         return ""+tokenType+"";
     }
+}
+interface A{
+
 }
