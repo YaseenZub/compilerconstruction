@@ -123,6 +123,3 @@ public enum TokenType {
         return ""+tokenType+"";
     }
 }
-interface A{
-
-}

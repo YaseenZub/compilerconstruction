@@ -14,7 +14,7 @@ public class SemanticAnalyzer {
         mainTable=new ArrayList<>();
         start=true;
     }
-    public boolean insert_MT(String name,String type,String cat,String parent,String ref,String am){
+    public boolean insert_MT(String name,String type,String cat,String parent,String uuid,String am){
         //lookup for existing in main table.
         //NO INNER CLASSES KA JHANJAT
         //REFERENCE IS I GUESS LINK,
@@ -26,7 +26,6 @@ public class SemanticAnalyzer {
             mt.setCategory(cat);
             mt.setParent(parent);
             mt.setAm(am);
-            String uuid = UUID.randomUUID().toString();
             mt.setLink(uuid);
             System.out.println(uuid);
             System.out.println("UPAR UUID HAI");

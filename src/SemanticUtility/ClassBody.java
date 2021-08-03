@@ -1,49 +1,67 @@
 package SemanticUtility;
 
+import token.TokenType;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class ClassBody {
-    private String name;
-    private String type;
-    private String am;
-    private String tm;
-    private String link;
+    String link;
+    Map<Entities, String> classBody;
+    public String name,type,am,tm;
+    ArrayList<Map> classList ;
+    int index;
 
-    public String getName() {
-        return name;
+    public ClassBody(){
+        classList = new ArrayList();
+        index=0;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public boolean assignMap(String valuepart,String accessModifier,String TypeModifier,String Type){
+
+        if(lookUp_CB(valuepart,Type)) {
+            classBody=new TreeMap<Entities, String>();
+            System.out.println("ANDAR AANA CHAIYUE");
+            classBody.put(Entities.Name, valuepart);
+            classBody.put(Entities.Am, accessModifier);
+            classBody.put(Entities.Type, Type);
+            classBody.put(Entities.Tm, TypeModifier);
+            classList.add(index,classBody);
+            index++;
+            return true;
+        }
+        return false;
     }
 
-    public String getType() {
-        return type;
+    public void assignLink(String uuid){
+        this.link=uuid;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public boolean lookUp_CB(String identifier,String Type){
+        if(!classList.isEmpty()) {
+            System.out.println("SECOND TIME WITH " +identifier);
+            for (Map content : classList) {
+                if (identifier.equals(content.get(Entities.Name).toString()) &&
+                Type.equals(content.get(Entities.Type).toString())) {
+                    //REDECLARATION ERROR
+
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    public String getAm() {
-        return am;
-    }
+    public void printClassList(){
+        for(Map content:classList){
+            System.out.println(content.get(Entities.Name));
+            System.out.println(content.get(Entities.Tm));
 
-    public void setAm(String am) {
-        this.am = am;
-    }
+            System.out.println(content.get(Entities.Type));
+            System.out.println(content.get(Entities.Am));
 
-    public String getTm() {
-        return tm;
-    }
+        }
 
-    public void setTm(String tm) {
-        this.tm = tm;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 }

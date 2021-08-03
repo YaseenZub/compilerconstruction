@@ -7,6 +7,8 @@ import token.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.UUID;
+
 import SemanticUtility.*;
 
 import javax.swing.*;
@@ -15,6 +17,7 @@ public class Parser {
         SemanticAnalyzer sem=new SemanticAnalyzer();
         String inherit_mt=null;
         String class_name_mt=null;
+        String uuid;
         String category_name_mt="General";
         String type_mt=null;
 
@@ -26,10 +29,17 @@ public class Parser {
         int[]  a =new int[]{1,2};
         SemanticException semanticException;
         JFrame frame;
+    String type=null;
+    ClassBody cb =new ClassBody();
+
+    //FUNCTION TABLE
+    ArrayList<Function> arrayList=new ArrayList<>();
+    Function function_table = new Function();
         public Parser(List<Token> ts, JFrame frame) {
             this.frame=frame;
             this.ts = ts;
             this.index = 0;
+
         }
 
         public List<Token> getToken() {
@@ -218,11 +228,19 @@ public class Parser {
 
                             if(inherit()) {
                                 s = TokenType.toString(ts.get(index).getTokenType());
-                                if(!sem.insert_MT(class_name_mt,type_mt,category_name_mt,inherit_mt,null,am_mt)){
+                                uuid = UUID.randomUUID().toString();
+                                if(!sem.insert_MT(class_name_mt,type,category_name_mt,inherit_mt,uuid,am_mt)){
                                     System.out.println("Redeclaration Error");
                                     JOptionPane.showMessageDialog(frame, "Redeclaration Error", "Error",
                                             JOptionPane.ERROR_MESSAGE);
                                 }
+
+                                class_name_mt=null;
+                                type=null;
+                                category_name_mt="General";
+                                inherit_mt=null;
+                                am_mt=null;
+
 
                                 if (s.equals("OpeningCurlyBrace")) {
                                     //TRYING:
@@ -248,6 +266,7 @@ public class Parser {
                 }
             }
             else if(s.equals("Abstract")){
+                category_name_mt="Abstract";
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("Class")){
@@ -291,6 +310,7 @@ public class Parser {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Private") || s.equals("Public") || s.equals("Protected")){
                 am_mt=s;
+                cb.am=s;
                 index++;
                 return true;
             }
@@ -317,11 +337,13 @@ public class Parser {
 
             return false;
         }
-
+String staticKeyword=null;
         public boolean Static(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             System.out.println("IN static "  + s);
             if(s.equals("Static")){
+                func_type=s;
+                staticKeyword="Static";
                 index++;
                 return true;
             }
@@ -407,6 +429,7 @@ public class Parser {
         public boolean c_body(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             int temp=index;
+            cb.assignLink(uuid);
             if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier") || s.equals("Static")
             ||s.equals("Final") || s.equals("Default") || s.equals("Public") || s.equals("Private") || s.equals("Protected")){
                 if(s.equals("Static")){
@@ -421,8 +444,17 @@ public class Parser {
                     if(c_bodyA()){
                         return true;
                     }
-                }else if(dec()){
+                }else if(dec()){  //MARKING FOR SE
                     s = TokenType.toString(ts.get(index).getTokenType());
+                    // NAME,TYPE,TM,AM
+                    String[] identifiers=cb.name.split(",");
+                    for(String content:identifiers){
+                        if(!cb.assignMap(content,cb.am,cb.tm,cb.type)){
+                            JOptionPane.showMessageDialog(frame, "Redeclaration Error", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
                     System.out.println("C_BODY SE RETURN");
                     if(c_body()){
                         return true;
@@ -684,17 +716,25 @@ public class Parser {
 
             return false;
         }
+
+    //lookup
+
         public boolean dec() { //2 int c1
             String s = TokenType.toString(ts.get(index).getTokenType());
             System.out.println("DECLARATION SE FALSES" +s);
             if (s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass")) {
+                cb.type=s;
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("Identifier")) {
+                    cb.name=ts.get(index).getTokenString();
                     index++; // Equals
+
+
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (init()) { //3 dec =
                         if (list())
+
                             return true;
                     }
                 }
@@ -716,7 +756,9 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("Identifier")) {
-                    index++;
+                    cb.name= cb.name+","+ts.get(index).getTokenString();
+
+                    index++; // Equals
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (init()) {
                         if (list()) {
@@ -745,6 +787,11 @@ public class Parser {
         }
 
 
+String return_type;
+String func_name;
+String func_signature;
+String params_list;
+String func_type;
 
         public boolean fun_def(){
             String s = TokenType.toString(ts.get(index).getTokenType());
@@ -757,6 +804,7 @@ public class Parser {
                             if(return_type()){
                                 s = TokenType.toString(ts.get(index).getTokenType());
                                 if(s.equals("Identifier")){
+                                    func_name=ts.get(index).getTokenString();
                                     index++;
                                     s = TokenType.toString(ts.get(index).getTokenType());
                                     if(s.equals("OpenBrace")){
@@ -765,6 +813,16 @@ public class Parser {
                                         if(params()){
                                             s = TokenType.toString(ts.get(index).getTokenType());
                                             if(s.equals("CloseBrace")){
+                                                func_signature=func_signature+"->"+return_type;
+                                                if(!cb.assignMap(func_name,am_mt,func_type,func_signature)){
+                                                    JOptionPane.showMessageDialog(frame, "Redeclaration Error", "Error",
+                                                            JOptionPane.ERROR_MESSAGE);
+                                                }
+                                                return_type=null;
+                                                am_mt="Default";
+                                                func_signature=null;
+                                                params_list=null;
+                                                func_type=null;
                                                 index++;
                                                 s = TokenType.toString(ts.get(index).getTokenType());
                                                 if(s.equals("OpeningCurlyBrace")){
@@ -847,6 +905,7 @@ public class Parser {
         public boolean return_type(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Double") || s.equals("Int") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Void")){
+                return_type=ts.get(index).getTokenString();
                 index++;
                 return true;
             }
@@ -1228,12 +1287,24 @@ public class Parser {
         public boolean params() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Int") || s.equals("Double") || s.equals("CharacterClass") || s.equals("StringClass")){
+                params_list=ts.get(index).getTokenString();
+                func_signature=s;
+                String type_param=s;
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("Identifier")){
+                    String name=ts.get(index).getTokenString();
+                    int temp_scope=scope+1;
+                    System.out.println("FUNCTI\t"+function_table);
+                    if(!function_table.addValues(name,type_param,scope)){
+                        JOptionPane.showMessageDialog(frame, "Redeclaration Error", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                     index++;
+
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(P1()){
+                        function_table.printArrayList();
                         return true;
                     }
                 }
@@ -1253,9 +1324,20 @@ public class Parser {
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if(s.equals("Int")|| s.equals("Double")||s.equals("CharacterClass")||s.equals("StringClass")){
+                    String type_param=s;
+                    func_signature=func_signature+","+s;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (s.equals("Identifier")) {
+                        String name=ts.get(index).getTokenString();
+                        int temp_scope=scope+1;
+                        System.out.println("FUNCTI\t"+function_table);
+
+                        if(!function_table.addValues(name,type_param,scope)){
+                            JOptionPane.showMessageDialog(frame, "Redeclaration Error in 2nd or more parameter", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+
                         index++;
                         if (P1()) {
                             return true;
@@ -1921,7 +2003,8 @@ public class Parser {
         public boolean Final(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Final")){
-                type_mt=s;
+                type=s;
+                cb.tm=s;
                 index++;
                 return true;
             }
