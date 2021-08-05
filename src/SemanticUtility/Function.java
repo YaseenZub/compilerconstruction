@@ -21,9 +21,6 @@ public class Function {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
 
     public void setType(String type) {
         this.type = type;
@@ -61,6 +58,17 @@ public class Function {
         }
 
         return true;
+    }
+
+    public String getType(String identifier,int scope){
+        for(Map content:arrayList){
+            if(identifier.equals(content.get("Identifier")) && Integer.parseInt(content.get("Scope").toString())==scope){
+                return content.get("Type").toString();
+
+            }
+        }
+
+        return "CANT FIND";
     }
 
     public void printArrayList(){

@@ -32,9 +32,7 @@ public class SemanticAnalyzer {
             mainTable.add(mt);
             return true;
         }
-
         return false;
-
     }
 
     public boolean lookup_MT(String identifier){
@@ -50,5 +48,43 @@ public class SemanticAnalyzer {
         return true;
 
 
+    }
+
+    public String Compatibility(String dt1,String dt2,String operand){
+
+        if((dt1.equals("String")||dt1.equals("StringClass"))&& operand=="Plus"){
+            if(dt2.equals("Double") || dt2.equals("DoubleConstant") || dt2.equals("Int")||dt2.equals("IntConstant")
+            ||dt2.equals("Character") || dt2.equals("CharacterClass") || dt2.equals("String") || dt2.equals("StringClass")){
+                return "StringClass";
+            }
+        }
+
+        else if(dt1.equals("Int")||dt1.equals("IntConstant") || dt1.equals("Double") || dt1.equals("DoubleConstant")){
+            if((dt2.equals("String") || dt2.equals("StringClass")) && operand=="Plus"){
+                return "StringClass";
+            }
+            else if(dt1.equals("Int") || dt1.equals("IntConstant")){
+                if(dt2.equals("Double")||dt2.equals("DoubleConstant")){
+                    return "Double";
+                }
+                else if(dt2.equals("Int") || dt2.equals("IntConstant")){
+                    return "Int";
+                }
+            }
+            else if((dt1.equals("Double") || dt1.equals("DoubleConstant"))&& (dt2.equals("Double") || dt2.equals("DoubleConstant") || dt2.equals("Int") ||
+            dt2.equals("IntConstant")) ){
+                return "Double";
+            }
+        }
+
+        else if((dt1.equals("Character") || dt1.equals("CharacterClass"))&& operand=="Plus"){
+            if(dt2.equals("StringClass") || dt2.equals("String")){
+                return "StringClass";
+            }
+        }
+
+
+
+        return "ERROR";
     }
 }

@@ -4,16 +4,14 @@ import lexer.Lexer;
 import token.Token;
 import token.TokenType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 import SemanticUtility.*;
 
 import javax.swing.*;
 
 public class Parser {
+        String caller="class";
         SemanticAnalyzer sem=new SemanticAnalyzer();
         String inherit_mt=null;
         String class_name_mt=null;
@@ -428,6 +426,7 @@ String staticKeyword=null;
 
         public boolean c_body(){
             String s = TokenType.toString(ts.get(index).getTokenType());
+            caller="class";
             int temp=index;
             cb.assignLink(uuid);
             if(s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Void") || s.equals("Identifier") || s.equals("Static")
@@ -727,10 +726,15 @@ String staticKeyword=null;
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("Identifier")) {
-                    cb.name=ts.get(index).getTokenString();
+                    if(caller.equals("class")) {
+                        cb.name = ts.get(index).getTokenString();
+                    }
+                    else if(caller.equals("function")){
+                        variable_name=ts.get(index).getTokenString();
+                        func_type=s;
+                    }
+
                     index++; // Equals
-
-
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (init()) { //3 dec =
                         if (list())
@@ -757,7 +761,8 @@ String staticKeyword=null;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("Identifier")) {
                     cb.name= cb.name+","+ts.get(index).getTokenString();
-
+                    if(caller.equals("function"))
+                        variable_name=variable_name+","+ts.get(index).getTokenString();
                     index++; // Equals
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (init()) {
@@ -775,7 +780,7 @@ String staticKeyword=null;
         public boolean init() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Equal")) {
-                index++; // intconstant dec
+                index++; // intconstant decdec() {
                 if (OE()) { //OE int contsant (3) 4
                     return true; //chala hai ye ;
                 }
@@ -788,12 +793,14 @@ String staticKeyword=null;
 
 
 String return_type;
+String variable_name;
 String func_name;
 String func_signature;
 String params_list;
 String func_type;
 
         public boolean fun_def(){
+            caller="function";
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Public") || s.equals("Private") || s.equals("Protected") || s.equals("Static") || s.equals("Int") || s.equals("Void")
             || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass") || s.equals("Final")){
@@ -993,7 +1000,8 @@ String func_type;
 
             return false;
         }
-
+    Queue<String> q
+            = new LinkedList<>();
 
         public boolean OE() { //4 i
             String s = TokenType.toString(ts.get(index).getTokenType());
@@ -1004,6 +1012,8 @@ String func_type;
     //                    if(s.equals("Semicolon")){
     //                        index++;
     //                    }
+                        JOptionPane.showMessageDialog(frame, q, "QUEUE",
+                                JOptionPane.ERROR_MESSAGE);
                         return true;
                     }
                 }
@@ -1122,6 +1132,7 @@ String func_type;
         public boolean Edash() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Plus") || s.equals("Minus")) {
+                q.add(ts.get(index).getTokenType().toString());
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (T()) {
@@ -1159,6 +1170,7 @@ String func_type;
         public boolean Tdash() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Multiply") || s.equals("Divide")) {
+                q.add(ts.get(index).getTokenType().toString());
                 index++;
                 if (F()) {
                     if (Tdash()) {
@@ -1180,12 +1192,25 @@ String func_type;
         public boolean F() {
             String s = TokenType.toString(ts.get(index).getTokenType());
             if (s.equals("Identifier")) {
+                //MOUJOOD HAI YA NAAI HAI
+                function_table.printArrayList();
+                if(caller.equals("function")){
+                    if(!function_table.lookup_func(ts.get(index).getTokenString(),scope)){
+                        q.add(function_table.getType(ts.get(index).getTokenString(),scope));
+//                        q.add(ts.get(index).getTokenType().toString().toCharArray()[0]);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(frame, "Undeclared Variable Error", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 index++;
                 if (Fdash()) {
                     return true;
                 }
             } else {
                 if (s.equals("DoubleConstant") || s.equals("IntConstant") || s.equals("String") || s.equals("Character")) {
+                    q.add(ts.get(index).getTokenType().toString());
                     index++;
                     return true;
                 } else if (s.equals("OpenBrace")) {
@@ -1304,7 +1329,6 @@ String func_type;
 
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(P1()){
-                        function_table.printArrayList();
                         return true;
                     }
                 }
@@ -1843,6 +1867,22 @@ String func_type;
                  }
 
                  if(dec()){
+                     System.out.println("IDHR AYA HAI");
+                     caller="function";
+                     String[] string =variable_name.split(",");
+                     for(String content:string){
+                         System.out.println(content);
+                         if(!function_table.addValues(content,func_type,scope)){
+                             JOptionPane.showMessageDialog(frame, "Redeclaration inside function", "Error",
+                                     JOptionPane.ERROR_MESSAGE);
+                         }
+                     }
+                     function_table.printArrayList();
+
+
+                     func_type=null;
+                     variable_name=null;
+                     System.out.println("IDHR KUCH HOA HAI");
                     return true;
                     }
                  else {
