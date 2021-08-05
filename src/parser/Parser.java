@@ -18,7 +18,7 @@ public class Parser {
         String uuid;
         String category_name_mt="General";
         String type_mt=null;
-
+        String identifier=null;
         String am_mt=null;
         Stack stack = new Stack();
         int scope=1;
@@ -548,6 +548,7 @@ String staticKeyword=null;
         public boolean c_bodyAdash(){
             String s = TokenType.toString(ts.get(index).getTokenType());
             if(s.equals("Equal")) {
+
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("New")) {
@@ -580,6 +581,7 @@ String staticKeyword=null;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Equal")){
+
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(arr_dec8()){
@@ -723,6 +725,7 @@ String staticKeyword=null;
             System.out.println("DECLARATION SE FALSES" +s);
             if (s.equals("Int") || s.equals("Double") || s.equals("StringClass") || s.equals("CharacterClass")) {
                 cb.type=s;
+                identifier=ts.get(index).getTokenString();
                 index++;
                 s = TokenType.toString(ts.get(index).getTokenType());
                 if (s.equals("Identifier")) {
@@ -731,7 +734,7 @@ String staticKeyword=null;
                     }
                     else if(caller.equals("function")){
                         variable_name=ts.get(index).getTokenString();
-                        func_type=s;
+                        func_type=cb.type;
                     }
 
                     index++; // Equals
@@ -763,6 +766,7 @@ String staticKeyword=null;
                     cb.name= cb.name+","+ts.get(index).getTokenString();
                     if(caller.equals("function"))
                         variable_name=variable_name+","+ts.get(index).getTokenString();
+
                     index++; // Equals
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if (init()) {
@@ -1012,8 +1016,7 @@ String func_type;
     //                    if(s.equals("Semicolon")){
     //                        index++;
     //                    }
-                        JOptionPane.showMessageDialog(frame, q, "QUEUE",
-                                JOptionPane.ERROR_MESSAGE);
+
                         return true;
                     }
                 }
@@ -1120,6 +1123,38 @@ String func_type;
             if (s.equals("Identifier") || s.equals("DoubleConstant") || s.equals("String") || s.equals("IntConstant") || s.equals("Character") || s.equals("OpenBrace") || s.equals("Not")) {
                 if (T()) {
                     if (Edash()) {
+
+                        String t1=null,o=null,t2=null;
+                      int i=0;
+
+                        while(!q.isEmpty()){
+                            if(i==0) {
+                                t1 = q.remove();
+                                o = q.remove();
+                                t2 = q.remove();
+                                i=1;
+
+                            }
+                            t1=sem.Compatibility(t1,t2,o);
+                            if(!t1.equals("Error") && !q.isEmpty()){
+                                o=q.remove();
+                                t2=q.remove();
+
+                            }
+                            else if(t1.equals("Error")){
+                                JOptionPane.showMessageDialog(frame, "ERROR IN TYPE" +q, "ERROR",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+
+                        }
+                        t1=sem.Compatibility(t1,t2,o);
+                        //LAST CHECK
+                        System.out.println("+++" + t1 +"++++" + identifier);
+                        if(!t1.equalsIgnoreCase(identifier)){
+                            JOptionPane.showMessageDialog(frame, "TYPE IS NOT OKAY" +t1+identifier, "ERROR",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+
                         return true;
                     }
                 }
@@ -1956,6 +1991,8 @@ String func_type;
 
                 }
                 else if(s.equals("Equal")){
+                    //TAKEME
+
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
 
@@ -1966,6 +2003,7 @@ String func_type;
                     }
                 }
                 else if(s.equals("Identifier")){
+                    identifier=ts.get(index).getTokenString();
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Equal")){
@@ -2182,6 +2220,7 @@ String func_type;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Identifier") || s.equals("Double") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Int")){
+                        identifier=ts.get(index).getTokenString();
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Equal")){
@@ -2206,9 +2245,11 @@ String func_type;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Identifier") || s.equals("Double") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Int")){
+                        identifier=ts.get(index).getTokenString();
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Equal")){
+
                             index++;
                             if(arr_dec7()){
                                 return true;
@@ -2463,6 +2504,7 @@ String func_type;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Identifier")|| s.equals("Double") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Int")){
                         index++;
+                        identifier=ts.get(index).getTokenString();
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Equal")){
                             index++;
@@ -2542,6 +2584,7 @@ String func_type;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Equal")){
+
                         index++;
                         if(arr_dec11dash()){
                             return true;
@@ -2676,6 +2719,7 @@ String func_type;
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     if(s.equals("Identifier")|| s.equals("Double") || s.equals("CharacterClass") || s.equals("StringClass") || s.equals("Int")){
+                        identifier=ts.get(index).getTokenString();
                         index++;
                         s = TokenType.toString(ts.get(index).getTokenType());
                         if(s.equals("Equal")){
@@ -2961,6 +3005,7 @@ String func_type;
                 s = TokenType.toString(ts.get(index).getTokenType());
 
                 if(s.equals("Identifier")){
+                    identifier=ts.get(index).getTokenString();
                     index++;
                     s = TokenType.toString(ts.get(index).getTokenType());
                     System.out.println("YAHAN AAO TO BTAO obj init");
